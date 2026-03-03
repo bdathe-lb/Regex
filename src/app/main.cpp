@@ -1,7 +1,10 @@
 #include "cli.hpp"
+#include "re/error.hpp"
+#include "re/lexer.hpp"
 
 #include <iostream>
 #include <string_view>
+#include <vector>
 
 namespace {
 
@@ -17,6 +20,17 @@ constexpr int kExitNotImplemented = 4;
  */
 void print_cli_error(const re::Error& e) {
   std::cerr << "error: " << e.message << "\n";
+}
+
+/**
+ * @brief Print tokens.
+ *
+ * @param tokens Token stream.
+ */
+void print_tokens(std::vector<re::Token>& tokens) {
+  for (auto token : tokens) {
+    std::cout << token;
+  }
 }
 
 } // namespace
@@ -40,8 +54,11 @@ int main(int argc, char *argv[]) {
     case re::CommandKind::Version:
       std::cout << re::version_text();
       return kExitOk;
-
-    case re::CommandKind::Lex:
+    case re::CommandKind::Lex: {
+      auto res = re::lex(cmd.pattern);
+      if (res.is_ok()) print_tokens(res.value());
+      return kExitOk;
+    }
     case re::CommandKind::Ast:
     case re::CommandKind::Nfa:
     case re::CommandKind::MatchFull:
