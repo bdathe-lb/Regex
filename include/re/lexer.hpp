@@ -26,9 +26,9 @@ enum class TokenKind {
 };
 
 struct Token {
-  TokenKind kind;
+  TokenKind kind;   // Token kind.
   char ch;          // Used only for Char, set to 0 for others.
-  std::size_t pos;
+  std::size_t pos;  // The position of the token in the original string.
 };
 
 // Print the characters in a Token to a string, taking special characters (e.g., \n, \t) into account.

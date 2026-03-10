@@ -1,10 +1,10 @@
 #include "cli.hpp"
 #include "re/error.hpp"
 #include "re/lexer.hpp"
+#include "re/parser.hpp"
 
 #include <iostream>
 #include <string_view>
-#include <vector>
 
 namespace {
 
@@ -20,17 +20,6 @@ constexpr int kExitNotImplemented = 4;
  */
 void print_cli_error(const re::Error& e) {
   std::cerr << "error: " << e.message << "\n";
-}
-
-/**
- * @brief Print tokens.
- *
- * @param tokens Token stream.
- */
-void print_tokens(std::vector<re::Token>& tokens) {
-  for (auto token : tokens) {
-    std::cout << token;
-  }
 }
 
 } // namespace
@@ -55,11 +44,39 @@ int main(int argc, char *argv[]) {
       std::cout << re::version_text();
       return kExitOk;
     case re::CommandKind::Lex: {
-      auto res = re::lex(cmd.pattern);
-      if (res.is_ok()) print_tokens(res.value());
+      // 1. Lexer
+      auto tokens_res = re::lex(cmd.pattern);
+      if (!tokens_res.is_ok()) {
+        std::cerr << "Lex error at position " << tokens_res.error().pos
+                  << ": " << tokens_res.error().message << "\n";
+        return kExitRegexError;
+      }
+
+      // 2. Print tokens
+      for (const auto& token : tokens_res.value()) {
+        std::cout << token;
+      }
       return kExitOk;
     }
-    case re::CommandKind::Ast:
+    case re::CommandKind::Ast: {
+      // 1. Lexer
+      auto tokens_res = re::lex(cmd.pattern);
+      if (!tokens_res.is_ok()) {
+        std::cerr << "Lex error at position " << tokens_res.error().pos
+                  << ": " << tokens_res.error().message << "\n";
+        return kExitRegexError;
+      }
+      // 2. Parser
+      auto ast_res = re::parse(tokens_res.value());
+      if (!ast_res.is_ok()) {
+        std::cerr << "Parse error at position " << ast_res.error().pos
+                  << ": " << ast_res.error().message << "\n";
+        return kExitRegexError;
+      }
+      // 3. Print AST
+      std::cout << *(ast_res.value());
+      return kExitOk;
+    }
     case re::CommandKind::Nfa:
     case re::CommandKind::MatchFull:
     case re::CommandKind::Search:

@@ -20,7 +20,7 @@ namespace {
 std::vector<std::string_view> to_args(int argc, char **argv) {
   std::vector<std::string_view> out;
 
-  size_t reserve_space = static_cast<size_t>(argc - 1);
+  std::size_t reserve_space = static_cast<std::size_t>(argc - 1);
   out.reserve(reserve_space);
 
   for (int i = 1; i < argc; ++ i) {

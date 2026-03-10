@@ -160,7 +160,7 @@ re::Result<std::vector<Token>> lex(std::string_view pattern) {
 
   // Prevent frequent capacity expansion
   tokens.reserve(pattern.size());
-  for (size_t i = 0; i < pattern.size(); ++ i) {
+  for (std::size_t i = 0; i < pattern.size(); ++ i) {
     if (pattern[i] == '(')       tokens.push_back(Token{TokenKind::LParen, 0, i});
     else if (pattern[i] == ')')  tokens.push_back(Token{TokenKind::RParen, 0, i});
     else if (pattern[i] == '|')  tokens.push_back(Token{TokenKind::Or, 0, i});
