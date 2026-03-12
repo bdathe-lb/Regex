@@ -2,6 +2,7 @@
 #include "re/error.hpp"
 #include "re/lexer.hpp"
 #include "re/parser.hpp"
+#include "re/nfa.hpp"
 
 #include <iostream>
 #include <string_view>
@@ -77,7 +78,27 @@ int main(int argc, char *argv[]) {
       std::cout << *(ast_res.value());
       return kExitOk;
     }
-    case re::CommandKind::Nfa:
+    case re::CommandKind::Nfa: {
+      // 1. Lexer
+      auto tokens_res = re::lex(cmd.pattern);
+      if (!tokens_res.is_ok()) {
+        std::cerr << "Lex error at position " << tokens_res.error().pos
+                  << ": " << tokens_res.error().message << "\n";
+        return kExitRegexError;
+      }
+      // 2. Parser
+      auto ast_res = re::parse(tokens_res.value());
+      if (!ast_res.is_ok()) {
+        std::cerr << "Parse error at position " << ast_res.error().pos
+                  << ": " << ast_res.error().message << "\n";
+        return kExitRegexError;
+      }
+      // 3. Nfa
+      auto nfa = re::nfa(ast_res.value());
+      std::cout << nfa;
+
+      return kExitOk;
+    }
     case re::CommandKind::MatchFull:
     case re::CommandKind::Search:
       std::cerr << "not implemented yet\n";
