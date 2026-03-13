@@ -133,17 +133,16 @@ Usage:
   re --help
   re --version
 
-  re --lex   <pattern>        (not implemented yet)
-  re --ast   <pattern>        (not implemented yet)
-  re --nfa   <pattern>        (not implemented yet)
-  re --match <pattern> <text> (not implemented yet)
-  re --search <pattern> <text> (not implemented yet)
+  re --lex   <pattern>
+  re --ast   <pattern>
+  re --nfa   <pattern>
+  re --match <pattern> <text>
+  re --search <pattern> <text>
 
 Exit codes:
   0 success
   2 CLI usage error
   3 regex parse/compile error
-  4 not implemented
 )";
 }
 
