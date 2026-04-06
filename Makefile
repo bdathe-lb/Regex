@@ -34,6 +34,23 @@ APP_DIR  := $(SRC_DIR)/app
 CXX := g++
 AR  := ar
 
+UNAME_S := $(shell uname -s)
+AR := ar
+
+ifeq ($(UNAME_S),Linux)
+    # Linux
+    CC  := gcc
+    CXX := g++
+else ifeq ($(UNAME_S),Darwin)
+    # macOS
+    CC  := gcc-15
+    CXX := g++-15
+else
+    # Other
+    CC  := gcc
+    CXX := g++
+endif
+
 # Include paths
 #  -Iinclude     : core public headers
 #  -Isrc/app     : app-private headers (e.g., src/app/cli.hpp)
